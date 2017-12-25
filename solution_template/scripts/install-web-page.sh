@@ -22,7 +22,7 @@ function throw_if_empty() {
 }
 
 #defaults
-artifacts_location="https://raw.githubusercontent.com/Azure/azure-devops-utils/master/"
+artifacts_location="https://raw.githubusercontent.com/Azure/jenkins/master/solution_template/"
 
 while [[ $# > 0 ]]
 do
@@ -62,12 +62,11 @@ throw_if_empty --url $url
 sudo mkdir ${location}
 artifacts=("headshot.png" "title.png" "azure.svg" "copy.png" "site.css" "site.js" "index.html")
 for i in "${artifacts[@]}"; do
-  if [[ $i =~ .*html.* ]]
-  then
-      raw_resource=$(curl --silent "${artifacts_location}/jenkins/jenkins-on-azure/$i${artifacts_location_sas_token}")
+  if [[ $i =~ .*html.* ]]; then
+      raw_resource=$(curl --silent "${artifacts_location}/nginx/$i${artifacts_location_sas_token}")
       final_resource=${raw_resource//'{domain-name}'/${url}}
       echo "${final_resource}" | sudo tee ${location}/$i > /dev/null
-    else
-      curl --silent "${artifacts_location}/jenkins/jenkins-on-azure/$i${artifacts_location_sas_token}" -o ${location}/$i
+  else
+      curl --silent "${artifacts_location}/nginx/$i${artifacts_location_sas_token}" -o ${location}/$i
   fi
 done
