@@ -8,7 +8,7 @@
         "name": "vmName",
         "type": "Microsoft.Common.TextBox",
         "label": "Name",
-        "defaultValue": "Jenkins",
+        "defaultValue": "jenkins",
         "toolTip": "",
         "constraints": {
           "required": true,
@@ -112,7 +112,7 @@
               "domainNameLabel": ""
             },
             "defaultValue": {
-              "publicIpAddressName": "JenkinsIP",
+              "publicIpAddressName": "jenkins-pip",
               "domainNameLabel": ""
             },
             "constraints": {
