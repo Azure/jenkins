@@ -131,17 +131,17 @@
   },
   "variables": {
     "_extensionScript": "install_jenkins.sh",
-    "frontEndNSGName": "[concat(parameters('vmName'), 'NSG')]",
-    "nicName": "[concat(parameters('vmName'), 'VMNic')]",
-    "publicIPDeploymentName": "[concat(parameters('publicIPName'), '-publicIP-deploy')]",
-    "subnetName": "[concat(parameters('vmName'), 'Subnet')]",
+    "frontEndNSGName": "[concat(parameters('vmName'), '-nsg')]",
+    "nicName": "[concat(parameters('vmName'), '-nic')]",
+    "publicIPDeploymentName": "[concat(parameters('publicIPName'), '-deploy')]",
+    "subnetName": "jenkins",
     "subnetPrefix": "10.0.0.0/24",
     "templateUrlIP": "[concat(parameters('artifactsLocation'),'/publicIP-',parameters('publicIPNewOrExisting'),'.json',parameters('artifactsLocationSasToken'))]",
     "templateUrlVM": "[concat(parameters('artifactsLocation'),'/VM-',parameters('authenticationType'),'.json',parameters('artifactsLocationSasToken'))]",
     "ubuntuSku": "16.04-LTS",
-    "virtualNetworkName": "[concat(parameters('vmName'), 'VNET')]",
+    "virtualNetworkName": "[concat(parameters('vmName'), '-vnet')]",
     "virtualNetworkPrefix": "10.0.0.0/16",
-    "vmDeploymentName": "[concat(parameters('vmName'), '-VM-deploy')]",
+    "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
     "vmPrivateIP": "10.0.0.5"
   },
   "resources": [

@@ -81,7 +81,7 @@
           "osDisk": {
             "caching": "ReadWrite",
             "createOption": "FromImage",
-            "name": "osDisk",
+            "name": "[concat(parameters('vmName'), '-disk0')]",
             "managedDisk":{
               "storageAccountType": "[parameters('storageAccountType')]"
             }
