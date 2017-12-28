@@ -7,7 +7,6 @@ Command
   $0
 Arguments
   --jenkins_fqdn|-jf       [Required] : Jenkins FQDN
-  --vm_private_ip|-pi                 : The VM private ip used to configure Jenkins URL. If missing, jenkins_fqdn will be used instead
   --jenkins_release_type|-jrt         : The Jenkins release type (LTS or weekly or verified). By default it's set to LTS
   --jenkins_version_location|-jvl     : Url used to specify the version of Jenkins.
   --service_principal_type|-sp        : The type of service principal: MSI or manual.
@@ -57,10 +56,6 @@ do
   case $key in
     --jenkins_fqdn|-jf)
       jenkins_fqdn="$1"
-      shift
-      ;;
-    --vm_private_ip|-pi)
-      vm_private_ip="$1"
       shift
       ;;
     --jenkins_release_type|-jrt)
@@ -128,13 +123,7 @@ if [[ "$jenkins_release_type" != "LTS" ]] && [[ "$jenkins_release_type" != "week
   exit 1
 fi
 
-if [ -z "$vm_private_ip" ]; then
-    #use port 80 for public fqdn
-    jenkins_url="http://${jenkins_fqdn}/"
-else
-    #use port 8080 for internal
-    jenkins_url="http://${vm_private_ip}:8080/"
-fi
+jenkins_url="http://${jenkins_fqdn}/"
 
 jenkins_auth_matrix_conf=$(cat <<EOF
 <authorizationStrategy class="hudson.security.ProjectMatrixAuthorizationStrategy">

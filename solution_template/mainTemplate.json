@@ -141,8 +141,7 @@
     "ubuntuSku": "16.04-LTS",
     "virtualNetworkName": "[concat(parameters('vmName'), '-vnet')]",
     "virtualNetworkPrefix": "10.0.0.0/16",
-    "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
-    "vmPrivateIP": "10.0.0.5"
+    "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]"
   },
   "resources": [
     {
@@ -270,8 +269,7 @@
           {
             "name": "ipconfig1",
             "properties": {
-              "privateIpAddress": "[variables('vmPrivateIP')]",
-              "privateIPAllocationMethod": "Static",
+              "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[resourceId(parameters('publicIPResourceGroup'),'Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]"
               },
