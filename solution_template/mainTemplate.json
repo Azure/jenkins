@@ -74,19 +74,22 @@
       "metadata": {
         "description": "Public IP name"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "jenkins-pip"
     },
     "publicIPNewOrExisting": {
       "metadata": {
         "description": "Should be 'new' if the public IP has to be created"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "new"
     },
     "publicIPResourceGroup": {
       "metadata": {
         "description": "The Public IP Resource Group"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]"
     },
     "storageAccountType": {
       "defaultValue": "Standard_LRS",
@@ -116,38 +119,61 @@
       },
       "type": "string"
     },
-    "subnetName": {
-      "type": "string"
-    },
-    "subnetAddressPrefix": {
-      "type": "string"
-    },
     "vmName": {
       "metadata": {
         "description": "Virtual Machine Name (also used as a prefix for other resources)"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "jenkins"
     },
     "vmSize": {
       "metadata": {
         "description": "Virtual Machine Size"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "Standard_DS1_v2"
     },
     "vnetNewOrExisting": {
       "metadata": {
-        "description": ""
+        "description": "Use new or existing VNET"
       },
-      "type": "string"
+      "type": "string",
+      "defaultValue": "new"
     },
     "vnetResourceGroup": {
-      "type": "string"
+      "metadata": {
+        "description": "Name of resource group of the VNET"
+      },
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]"
     },
     "vnetName": {
-      "type": "string"
+      "metadata": {
+        "description": "Name of the Virtual Network (VNET)"
+      },
+      "type": "string",
+      "defaultValue": "jenkins-vnet"
     },
     "vnetAddressPrefix": {
-      "type": "string"
+      "metadata": {
+        "description": "Virtual network address CIDR"
+      },
+      "type": "string",
+      "defaultValue": "172.16.0.0/16"
+    },
+    "subnetName": {
+      "metadata": {
+        "description": "Name of the subnet"
+      },
+      "type": "string",
+      "defaultValue": "jenkins"
+    },
+    "subnetAddressPrefix": {
+      "metadata": {
+        "description": "subnet CIDR"
+      },
+      "type": "string",
+      "defaultValue": "172.16.0.0/24"
     }
   },
   "variables": {
