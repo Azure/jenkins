@@ -116,6 +116,12 @@
       },
       "type": "string"
     },
+    "subnetName": {
+      "type": "string"
+    },
+    "subnetAddressPrefix": {
+      "type": "string"
+    },
     "vmName": {
       "metadata": {
         "description": "Virtual Machine Name (also used as a prefix for other resources)"
@@ -127,21 +133,34 @@
         "description": "Virtual Machine Size"
       },
       "type": "string"
+    },
+    "vnetNewOrExisting": {
+      "metadata": {
+        "description": ""
+      },
+      "type": "string"
+    },
+    "vnetResourceGroup": {
+      "type": "string"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetAddressPrefix": {
+      "type": "string"
     }
   },
   "variables": {
     "_extensionScript": "install_jenkins.sh",
     "frontEndNSGName": "[concat(parameters('vmName'), '-nsg')]",
     "nicName": "[concat(parameters('vmName'), '-nic')]",
-    "publicIPDeploymentName": "[concat(parameters('publicIPName'), '-deploy')]",
-    "subnetName": "jenkins",
-    "subnetPrefix": "10.0.0.0/24",
+    "publicIPDeploymentName": "[concat(parameters('vmName'), '-pip-deploy')]",
     "templateUrlIP": "[concat(parameters('artifactsLocation'),'/publicIP-',parameters('publicIPNewOrExisting'),'.json',parameters('artifactsLocationSasToken'))]",
+    "templateUrlVnet": "[concat(parameters('artifactsLocation'),'/vnet-',parameters('vnetNewOrExisting'),'.json',parameters('artifactsLocationSasToken'))]",
     "templateUrlVM": "[concat(parameters('artifactsLocation'),'/VM-',parameters('authenticationType'),'.json',parameters('artifactsLocationSasToken'))]",
     "ubuntuSku": "16.04-LTS",
-    "virtualNetworkName": "[concat(parameters('vmName'), '-vnet')]",
-    "virtualNetworkPrefix": "10.0.0.0/16",
-    "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]"
+    "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
+    "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]"
   },
   "resources": [
     {
@@ -167,6 +186,36 @@
         "templateLink": {
           "contentVersion": "1.0.0.0",
           "uri": "[variables('templateUrlIP')]"
+        }
+      },
+      "type": "Microsoft.Resources/deployments"
+    },
+    {
+      "apiVersion": "2016-09-01",
+      "dependsOn": [],
+      "name": "[variables('vnetDeployName')]",
+      "properties": {
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          },
+          "vnetAddressPrefix": {
+            "value": "[parameters('vnetAddressPrefix')]"
+          },
+          "subnetName": {
+            "value": "[parameters('subnetName')]"
+          },
+          "subnetAddressPrefix": {
+            "value": "[parameters('subnetAddressPrefix')]"
+          }
+        },
+        "templateLink": {
+          "contentVersion": "1.0.0.0",
+          "uri": "[variables('templateUrlVnet')]"
         }
       },
       "type": "Microsoft.Resources/deployments"
@@ -228,33 +277,9 @@
     },
     {
       "apiVersion": "2016-03-30",
-      "location": "[parameters('location')]",
-      "name": "[variables('virtualNetworkName')]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[variables('virtualNetworkPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]"
-            }
-          }
-        ]
-      },
-      "tags": {
-        "displayName": "[variables('virtualNetworkName')]"
-      },
-      "type": "Microsoft.Network/virtualNetworks"
-    },
-    {
-      "apiVersion": "2016-03-30",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontEndNSGName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('vnetDeployName'))]",
         "[resourceId('Microsoft.Resources/deployments', variables('publicIPDeploymentName'))]"
       ],
       "location": "[parameters('location')]",
@@ -269,7 +294,7 @@
                 "id": "[resourceId(parameters('publicIPResourceGroup'),'Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]"
               },
               "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')),'/subnets/',variables('subnetName'))]"
+                "id": "[concat(resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/',parameters('subnetName'))]"
               }
             }
           }

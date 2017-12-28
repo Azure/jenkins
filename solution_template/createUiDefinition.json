@@ -101,6 +101,39 @@
             "visible": true
           },
           {
+            "name": "vnet",
+            "type": "Microsoft.Network.VirtualNetworkCombo",
+            "label": {
+              "virtualNetwork": "Virtual network",
+              "subnets": "Subnets"
+            },
+            "toolTip": {
+              "virtualNetwork": "",
+              "subnets": ""
+            },
+            "defaultValue": {
+              "name": "jenkins-vnet",
+              "addressPrefixSize": "/16"
+            },
+            "constraints": {
+              "minAddressPrefixSize": "/24"
+            },
+            "subnets": {
+              "subnet1": {
+                "label": "Subset",
+                "defaultValue": {
+                  "name": "jenkins",
+                  "addressPrefixSize": "/24"
+                },
+                "constraints": {
+                  "minAddressPrefixSize": "/30",
+                  "minAddressCount": 1,
+                  "requireContiguousAddresses": true
+                }
+              }
+            }
+          },
+          {
             "name": "publicIP",
             "type": "Microsoft.Network.PublicIpAddressCombo",
             "label": {
@@ -260,7 +293,13 @@
       "spType": "[steps('secondStep').sptype]",
       "spId": "[steps('secondStep').spSection.spid]",
       "spSecret": "[steps('secondStep').spSection.spsecret]",
-      "enableCloudAgents": "[steps('secondStep').enableCloudAgents]"
+      "enableCloudAgents": "[steps('secondStep').enableCloudAgents]",
+      "vnetName": "[steps('firstStep').vnet.name]",
+      "vnetResourceGroup": "[steps('firstStep').vnet.resourceGroup]",
+      "vnetAddressPrefix": "[steps('firstStep').vnet.addressPrefix]",
+      "vnetNewOrExisting": "[steps('firstStep').vnet.newOrExisting]",
+      "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
+      "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]"
     }
   }
 }
