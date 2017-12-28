@@ -228,9 +228,6 @@
     },
     {
       "apiVersion": "2016-03-30",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontEndNSGName'))]"
-      ],
       "location": "[parameters('location')]",
       "name": "[variables('virtualNetworkName')]",
       "properties": {
@@ -243,10 +240,7 @@
           {
             "name": "[variables('subnetName')]",
             "properties": {
-              "addressPrefix": "[variables('subnetPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontEndNSGName'))]"
-              }
+              "addressPrefix": "[variables('subnetPrefix')]"
             }
           }
         ]
@@ -259,6 +253,7 @@
     {
       "apiVersion": "2016-03-30",
       "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontEndNSGName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
         "[resourceId('Microsoft.Resources/deployments', variables('publicIPDeploymentName'))]"
       ],
@@ -278,7 +273,10 @@
               }
             }
           }
-        ]
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('frontEndNSGName'))]"
+        }
       },
       "tags": {
         "displayName": "[variables('nicName')]"
