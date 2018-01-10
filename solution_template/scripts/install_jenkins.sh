@@ -43,6 +43,20 @@ function run_util_script() {
   fi
 }
 
+function retry_until_successful {
+  counter=0
+  "${@}"
+  while [ $? -ne 0 ]; do
+    if [[ "$counter" -gt 20 ]]; then
+        exit 1
+    else
+        let counter++
+    fi
+    sleep 5
+    "${@}"
+  done;
+}
+
 #defaults
 artifacts_location="https://raw.githubusercontent.com/Azure/jenkins/master/solution_template"
 jenkins_version_location="https://raw.githubusercontent.com/Azure/jenkins/master/jenkins-verified-ver"
@@ -251,6 +265,10 @@ else
   sudo apt-get install jenkins --yes
   sudo apt-get install jenkins --yes # sometime the first apt-get install jenkins command fails, so we try it twice
 fi
+
+# wait until Jenkins is started and running
+retry_until_successful sudo test -f /var/lib/jenkins/secrets/initialAdminPassword
+retry_until_successful run_util_script "scripts/run-cli-command.sh" -c "version"
 
 #We need to install workflow-aggregator so all the options in the auth matrix are valid
 plugins=(azure-vm-agents windows-azure-storage matrix-auth workflow-aggregator azure-app-service tfs azure-acs azure-container-agents)
