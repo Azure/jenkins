@@ -105,11 +105,12 @@ run_util_script quickstart_templates/zero_downtime_deployment/kubernetes/fetch-k
   --artifacts_location "$artifacts_location" \
   --sas_token "${artifacts_location_sas_token}" \
   --directory k8s \
-  -f deployment.yml -f service.yml -f test-endpoint.yml
+  -f deployment.yml -f service.yml -f test-endpoint.yml -f deployment-rolling.yml -f service-rolling.yml
 
-sed -e 's/\${TARGET_ROLE}/blue/g; s/\${TOMCAT_VERSION}/7.0-jre8/g' k8s/deployment.yml >k8s/deployment-blue.yml
-sed -e 's/\${TARGET_ROLE}/green/g; s/\${TOMCAT_VERSION}/7.0-jre8/g' k8s/deployment.yml >k8s/deployment-green.yml
-sed -e 's/\${TARGET_ROLE}/blue/g; s/\${TOMCAT_VERSION}/7.0-jre8/g' k8s/service.yml >k8s/service-blue.yml
+sed -e 's/\${TARGET_ROLE}/blue/g; s/\${TOMCAT_VERSION}/7/g' k8s/deployment.yml >k8s/deployment-blue.yml
+sed -e 's/\${TARGET_ROLE}/green/g; s/\${TOMCAT_VERSION}/7/g' k8s/deployment.yml >k8s/deployment-green.yml
+sed -e 's/\${TARGET_ROLE}/rolling-update/g; s/\${TOMCAT_VERSION}/7/g' k8s/deployment-rolling.yml >k8s/deployment-rolling-update.yml
+sed -e 's/\${TARGET_ROLE}/blue/g' k8s/service.yml >k8s/service-blue.yml
 sed -e 's/\${TARGET_ROLE}/blue/g' k8s/test-endpoint.yml >k8s/test-endpoint-blue.yml
 sed -e 's/\${TARGET_ROLE}/green/g' k8s/test-endpoint.yml >k8s/test-endpoint-green.yml
 
@@ -130,7 +131,9 @@ az aks get-credentials --resource-group "${resource_group}" --name "${aks_name}"
 
 kubectl --kubeconfig kubeconfig apply -f k8s/deployment-blue.yml
 kubectl --kubeconfig kubeconfig apply -f k8s/deployment-green.yml
+kubectl --kubeconfig kubeconfig apply -f k8s/deployment-rolling-update.yml
 kubectl --kubeconfig kubeconfig apply -f k8s/service-blue.yml
+kubectl --kubeconfig kubeconfig apply -f k8s/service-rolling.yml
 kubectl --kubeconfig kubeconfig apply -f k8s/test-endpoint-blue.yml
 kubectl --kubeconfig kubeconfig apply -f k8s/test-endpoint-green.yml
 
@@ -158,6 +161,7 @@ function wait_public_ip() {
 wait_public_ip "tomcat-service"
 wait_public_ip "tomcat-test-blue"
 wait_public_ip "tomcat-test-green"
+wait_public_ip "tomcat-service-rolling"
 
 # keep for diagnostics
 #rm -rf k8s

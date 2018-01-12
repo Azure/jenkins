@@ -1,16 +1,16 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: tomcat-service
+  name: tomcat-service-rolling
   labels:
     app: tomcat
-    role: ${TARGET_ROLE}
+    role: rolling-update
     env: prod
 spec:
   type: LoadBalancer
   selector:
     app: tomcat
-    role: ${TARGET_ROLE}
+    role: rolling-update
   ports:
     - port: 80
       targetPort: 8080

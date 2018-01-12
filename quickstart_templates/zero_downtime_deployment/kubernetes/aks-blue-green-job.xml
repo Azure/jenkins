@@ -12,9 +12,9 @@
           <description>The Tomcat version that will be deployed and activated.</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>7-jre8</string>
-              <string>8-jre8</string>
-              <string>9-jre8</string>
+              <string>7</string>
+              <string>8</string>
+              <string>9</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
@@ -50,8 +50,7 @@ node {
         // In real world projects, this is likely to be done using source code management tool like git.
         sh """
           curl --silent "${artifactsLocation}/quickstart_templates/zero_downtime_deployment/kubernetes/fetch-k8s-resource-config.sh" | bash -s -- --artifacts_location "${artifactsLocation}" --sas_token "${sasToken}" --directory k8s
-          test -e k8s/service.yml
-          test -e k8s/deployment.yml
+          test -e k8s/service.yml && test -e k8s/deployment.yml
         """
     }
 

@@ -1,14 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: tomcat-deployment-${TARGET_ROLE}
+  name: tomcat-deployment-rolling-update
 spec:
   replicas: 2
   template:
     metadata:
       labels:
         app: tomcat
-        role: ${TARGET_ROLE}
+        role: rolling-update
     spec:
       containers:
       - name: tomcat-container
@@ -19,3 +19,8 @@ spec:
           httpGet:
             path: /
             port: 8080
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 50%
