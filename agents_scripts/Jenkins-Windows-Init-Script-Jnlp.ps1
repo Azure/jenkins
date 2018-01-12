@@ -66,8 +66,8 @@ $wc.DownloadFile($slaveSource, $destSource)
 $wrapperExec = "c:\jenkins\jenkins-slave.exe"
 $configFile = "c:\jenkins\jenkins-slave.xml"
 $wc.DownloadFile("https://github.com/kohsuke/winsw/releases/download/winsw-v2.1.2/WinSW.NET2.exe", $wrapperExec)
-$wc.DownloadFile("https://raw.githubusercontent.com/azure-devops/ci/master/resources/jenkins-slave.exe.config", "c:\jenkins\jenkins-slave.exe.config")
-$wc.DownloadFile("https://raw.githubusercontent.com/azure-devops/ci/master/resources/jenkins-slave.xml", $configFile)
+$wc.DownloadFile("https://raw.githubusercontent.com/Azure/jenkins/master/agents_scripts/jenkins-slave.exe.config", "c:\jenkins\jenkins-slave.exe.config")
+$wc.DownloadFile("https://raw.githubusercontent.com/Azure/jenkins/master/agents_scripts/jenkins-slave.xml", $configFile)
 
 # Prepare config
 Write-Output "Executing agent process "
