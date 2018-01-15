@@ -2,9 +2,10 @@
 This repository contains Jenkins related resources in Azure.
 
 ## Contents
-* Jenkins Solution Template (/solution_template) 
-  * This [solution template](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/azure-oss.jenkins?tab=Overview) will deploy the latest stable Jenkins version on a Linux (Ubuntu 16.04 LTS) VM along with tools and plugins configured to work with Azure
-* Jenkins Agents Initialization Scripts (/agents_scripts)
+* Jenkins Solution Template ([solution_template/](solution_template/)) 
+  * This [solution template](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/azure-oss.jenkins?tab=Overview) will deploy the latest stable Jenkins version on a Linux (Ubuntu 16.04 LTS) VM along with tools and plugins configured to work with Azure.
+  * Here're some [documents](https://github.com/Azure/azure-marketplace/wiki/Getting-Started-with-Solution-Templates) explain how to write and test the solution template.
+* Jenkins Agents Initialization Scripts ([agents_scripts/](agents_scripts/))
   * These scripts setup a new provisioned Windows VM as a Jenkins agent.
   * [Jenkins-Windows-Init-Script-Jnlp.ps1](agents_scripts/Jenkins-Windows-Init-Script-Jnlp.ps1) launches the agent via JNLP.
   * [Jenkins-Windows-Init-Script-SSH.ps1](agents_scripts/Jenkins-Windows-Init-Script-SSH.ps1) launches the agent via SSH.
