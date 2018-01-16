@@ -46,6 +46,7 @@ function run_util_script() {
 #defaults
 artifacts_location="https://raw.githubusercontent.com/Azure/jenkins/master/solution_template"
 jenkins_version_location="https://raw.githubusercontent.com/Azure/jenkins/master/jenkins-verified-ver"
+jenkins_fallback_version="2.73.3"
 azure_web_page_location="/usr/share/nginx/azure"
 jenkins_release_type="LTS"
 
@@ -238,6 +239,9 @@ sudo apt-get install openjdk-8-jre openjdk-8-jre-headless openjdk-8-jdk --yes
 #install jenkins
 if [[ ${jenkins_release_type} == 'verified' ]]; then
   jenkins_version=$(curl --silent "${jenkins_version_location}")
+  if [ -z "$jenkins_version" ]; then
+    jenkins_version=${jenkins_fallback_version}
+  fi
   deb_file=jenkins_${jenkins_version}_all.deb
   wget -q "https://pkg.jenkins.io/debian-stable/binary/${deb_file}"
   if [[ -f ${deb_file} ]]; then
