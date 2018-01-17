@@ -1,4 +1,4 @@
-# HA for solution template (Managed Disk)
+# Disaster Recovery for solution template (Managed Disk)
 
 ## Persist JENKINS_HOME on dataDisk
 
