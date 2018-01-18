@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: tomcat-service-rolling
+  labels:
+    app: tomcat
+    role: rolling-update
+    env: prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: tomcat
+    role: rolling-update
+  ports:
+    - port: 80
+      targetPort: 8080
