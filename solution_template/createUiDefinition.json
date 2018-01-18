@@ -210,6 +210,10 @@
                 {
                   "label": "Manual",
                   "value": "manual"
+                },
+                {
+                  "label": "Off",
+                  "value": "off"
                 }
               ]
             },
@@ -271,7 +275,7 @@
                 }
               ]
             },
-            "visible": true
+            "visible": "[not(equals(steps('secondStep').sptype,'off'))]"
           }
         ]
       }
