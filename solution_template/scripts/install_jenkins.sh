@@ -335,10 +335,12 @@ if [ "${service_principal_type}" == 'msi' ]; then
   echo "${msi_cred}" > msi_cred.xml
   run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif msi_cred.xml
   rm msi_cred.xml
-else
+elif [ "${service_principal_type}" == 'manual' ]; then
   echo "${sp_cred}" > sp_cred.xml
   run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif sp_cred.xml
   rm sp_cred.xml
+elif [ "${service_principal_type}" == 'off' ]; then
+  cloud_agents="no"
 fi
 
 #add cloud agents
