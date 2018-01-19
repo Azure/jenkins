@@ -1,5 +1,8 @@
 # Disaster Recovery for solution template (Managed Disk)
 
+Jenkins persists all the configurations, plugins and logs in JENKINS_HOME. This script lists one by one steps to help you move JENKINS_HOME to another disk called `dataDisk`. Once your Jenkins instance break down, you can detach `dataDisk` from the original Jenkins instance and attach to a new Jenkins instance to achieve disaster recovery.
+
+
 ## Persist JENKINS_HOME on dataDisk
 
 Add new data disk to VM
