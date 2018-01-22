@@ -9,6 +9,8 @@ This repository contains Jenkins related resources in Azure.
   * These scripts setup a new provisioned Windows VM as a Jenkins agent.
   * [Jenkins-Windows-Init-Script-Jnlp.ps1](agents_scripts/Jenkins-Windows-Init-Script-Jnlp.ps1) launches the agent via JNLP.
   * [Jenkins-Windows-Init-Script-SSH.ps1](agents_scripts/Jenkins-Windows-Init-Script-SSH.ps1) launches the agent via SSH.
+* Jenkins Disaster Recovery ([disaster_recovery/](disaster_recovery))
+  * This [script](disaster_recovery/disaster-recovery.md) helps you to achieve disaster recovery.
 
 ## Questions/Comments?
 
