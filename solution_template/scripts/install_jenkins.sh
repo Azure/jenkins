@@ -403,6 +403,7 @@ aci_agent_conf=$(cat <<EOF
     <templates>
       <com.microsoft.jenkins.containeragents.aci.AciContainerTemplate>
         <name>aciagents</name>
+        <label>linux</label>
         <image>jenkinsci/jnlp-slave</image>
         <osType>Linux</osType>
         <command>jenkins-slave -url \${rootUrl} \${secret} \${nodeName}</command>
