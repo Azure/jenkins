@@ -177,6 +177,7 @@ run_util_script "quickstart_templates/zero_downtime_deployment/vmss/add-jenkins-
     -j "http://localhost:8080/" \
     -ju "admin" \
     --resource_group "$resource_group" \
+    --location "$location" \
     --name_prefix "$name_prefix" \
     --service_name "$service_name" \
     --sp_subscription_id "$subscription_id" \

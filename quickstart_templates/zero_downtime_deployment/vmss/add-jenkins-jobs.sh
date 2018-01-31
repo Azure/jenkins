@@ -9,6 +9,7 @@ Arguments
   --jenkins_username|-ju          [Required]: Jenkins user name
   --jenkins_password|-jp                    : Jenkins password. If not specified and the user name is "admin", the initialAdminPassword will be used
   --resource_group|-rg            [Required]: The VMSS resource group, it will also be used to store the managed OS images.
+  --location|-l                   [Required]: The location of the VMSS resource group
   --name_prefix|-np               [Required]: The resource name prefix without trailing hyphen.
   --service_name|-sn                        : The service name. Should be the same as the routing rule name in the VMSS frontend load balancer.
   --sp_credentials_id|-spi                  : Desired Jenkins Azure service principal ID
@@ -72,6 +73,10 @@ do
       resource_group="$1"
       shift
       ;;
+    --location|-l)
+      location="$1"
+      shift
+      ;;
     --name_prefix|-np)
       name_prefix="$1"
       shift
@@ -132,6 +137,7 @@ if [ "$jenkins_username" != "admin" ]; then
   throw_if_empty --jenkins_password "$jenkins_password"
 fi
 throw_if_empty --resource_group "$resource_group"
+throw_if_empty --location "$location"
 throw_if_empty --name_prefix "$name_prefix"
 throw_if_empty --sp_credentials_id "$sp_credentials_id"
 throw_if_empty --sp_subscription_id "$sp_subscription_id"
@@ -149,6 +155,7 @@ sp_credentials_xml=$(curl -s ${artifacts_location}/quickstart_templates/shared/s
 bake_job_xml=${bake_job_xml//'{insert-resource-group}'/${resource_group}}
 bake_job_xml=${bake_job_xml//'{insert-artifacts-location}'/${artifacts_location}}
 bake_job_xml=${bake_job_xml//'{insert-sas-token}'/${artifacts_location_sas_token}}
+bake_job_xml=${bake_job_xml//'{insert-location}'/${location}}
 
 #prepare deploy job
 deploy_job_xml=${deploy_job_xml//'{insert-resource-group}'/${resource_group}}

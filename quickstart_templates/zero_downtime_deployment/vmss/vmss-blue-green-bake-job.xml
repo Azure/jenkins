@@ -34,6 +34,7 @@
     <script><![CDATA[
 node {
     def resourceGroup = env.RESOURCE_GROUP?.trim()
+    def location = '{insert-location}'
     def imageName = env.IMAGE_NAME?.trim() ?: "tomcat-${env.TOMCAT_VERSION}-${java.util.UUID.randomUUID().toString().substring(0, 8)}"
 
     def artifactsLocation = '{insert-artifacts-location}'
@@ -66,7 +67,7 @@ bash packer-build-tomcat-image.sh --app_id "\$AZURE_CLIENT_ID" \\
     --tomcat_version "${env.TOMCAT_VERSION}" \\
     --image_name "${imageName}" \\
     --resource_group "${resourceGroup}" \\
-    --location "southeastasia" \\
+    --location "${location}" \\
     --artifacts_location "${artifactsLocation}" \\
     --sas_token "${sasToken}"
 """
