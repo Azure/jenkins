@@ -2,7 +2,7 @@
 
 function print_usage() {
   cat <<EOF
-https://github.com/Azure/jenkins/blob/master/quickstart_templates/zero_downtime_deployment/301-jenkins-aks-zero-downtime-deployment.sh
+https://github.com/Azure/jenkins/blob/master/quickstart_templates/zero_downtime_deployment/301-jenkins-vmss-zero-downtime-deployment.sh
 Command
   $0
 Arguments
@@ -11,8 +11,12 @@ Arguments
   --subscription_id|-si              [Required] : Subscription Id
   --tenant_id|-ti                    [Required] : Tenant Id
   --resource_group|-rg               [Required] : Resource group containing your Kubernetes cluster
-  --aks_name|-an                     [Required] : Name of the Azure Kubernetes Service
+  --location|-lo                     [Required] : Location of the resource group
+  --name_prefix|-np                  [Required] : Resource name prefix without trailing hyphen.
   --jenkins_fqdn|-jf                 [Required] : Jenkins FQDN
+  --service_name|-sn                            : The service name. Should be the same as the routing rule name in the VMSS frontend load balancer.
+  --image_name|-in                              : If specified, the script build a managed OS image with Tomcat 7 installed,
+                                                  which will be stored in the passed in resource group using this name.
   --artifacts_location|-al                      : Url used to reference other scripts/artifacts.
   --sas_token|-st                               : A sas token needed if the artifacts location is private.
 EOF
@@ -39,14 +43,6 @@ function run_util_script() {
   fi
 }
 
-function install_kubectl() {
-  if !(command -v kubectl >/dev/null); then
-    kubectl_file="/usr/local/bin/kubectl"
-    sudo curl -L -s -o $kubectl_file https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
-    sudo chmod +x $kubectl_file
-  fi
-}
-
 function install_az() {
   if !(command -v az >/dev/null); then
     sudo apt-get update && sudo apt-get install -y libssl-dev libffi-dev python-dev
@@ -57,6 +53,7 @@ function install_az() {
   fi
 }
 
+service_name=tomcat
 artifacts_location="https://raw.githubusercontent.com/Azure/jenkins/master"
 
 while [[ $# > 0 ]]
@@ -84,12 +81,24 @@ do
       resource_group="$1"
       shift
       ;;
-    --aks_name|-an)
-      aks_name="$1"
+    --location|-lo)
+      location="$1"
+      shift;
+      ;;
+    --name_prefix|-np)
+      name_prefix="$1"
       shift
       ;;
     --jenkins_fqdn|-jf)
       jenkins_fqdn="$1"
+      shift
+      ;;
+    --service_name|-sn)
+      service_name="$1"
+      shift
+      ;;
+    --image_name|-in)
+      image_name="$1"
       shift
       ;;
     --artifacts_location|-al)
@@ -115,44 +124,65 @@ throw_if_empty --app_key "$app_key"
 throw_if_empty --subscription_id "$subscription_id"
 throw_if_empty --tenant_id "$tenant_id"
 throw_if_empty --resource_group "$resource_group"
-throw_if_empty --aks_name "$aks_name"
+throw_if_empty --location "$location"
+throw_if_empty --name_prefix "$name_prefix"
 throw_if_empty --jenkins_fqdn "$jenkins_fqdn"
 
-install_kubectl
+sudo apt-get install --yes jq curl
 
 install_az
 
-sudo apt-get install --yes jq
+az login --service-principal -u "$app_id" -p "$app_key" --tenant "$tenant_id"
+az account set --subscription "$subscription_id"
+location="$(az group show --name "$resource_group" --query location --output tsv)"
+if [[ -z "$location" ]]; then
+  echo "Cannot determine location of resource group '$resource_group' in script '$0'" >&2
+  exit -1
+fi
+
+if [[ -n "$image_name" ]]; then
+  run_util_script "quickstart_templates/zero_downtime_deployment/vmss/packer-build-tomcat-image.sh" \
+    --app_id "$app_id" \
+    --app_key "$app_key" \
+    --subscription_id "$subscription_id" \
+    --tenant_id "$tenant_id" \
+    --tomcat_version 7 \
+    --image_name "$image_name" \
+    --resource_group "$resource_group" \
+    --location "$location" \
+    --artifacts_location "$artifacts_location" \
+    --sas_token "$sas_token"
+  
+  image_id="$(az image show --resource-group "${resource_group}" --name "${image_name}" --query id --output tsv)"
+  if [[ -z "$image_id" ]]; then
+    echo "Failed to build the image '${image_name} in resource group '${resource_group}'" >&2
+    exit 1
+  fi
+fi
+
+az logout
 
 #install jenkins
 run_util_script "solution_template/scripts/install_jenkins.sh" \
   --jenkins_release_type verified \
   --jenkins_version_location "${artifacts_location}/quickstart_templates/shared/verified-jenkins-version${artifacts_location_sas_token}" \
   --jenkins_fqdn "${jenkins_fqdn}" \
-  --artifacts_location https://raw.githubusercontent.com/Azure/jenkins/master/solution_template \
+  --artifacts_location "${artifacts_location}/solution_template" \
   --sas_token "${artifacts_location_sas_token}"
 
-run_util_script "quickstart_templates/zero_downtime_deployment/kubernetes/bootstrap-aks.sh" \
-    --resource_group "$resource_group" \
-    --aks_name "$aks_name" \
-    --sp_subscription_id "$subscription_id" \
-    --sp_client_id "$app_id" \
-    --sp_client_password "$app_key" \
-    --sp_tenant_id "$tenant_id" \
-    --artifacts_location "$artifacts_location" \
-    --sas_token "$artifacts_location_sas_token"
+run_util_script "solution_template/scripts/run-cli-command.sh" -c "install-plugin ssh-agent -deploy"
+run_util_script "solution_template/scripts/run-cli-command.sh" -c "install-plugin azure-vmss -deploy"
 
-run_util_script "quickstart_templates/zero_downtime_deployment/kubernetes/add-jenkins-jobs.sh" \
+run_util_script "quickstart_templates/zero_downtime_deployment/vmss/add-jenkins-jobs.sh" \
     -j "http://localhost:8080/" \
     -ju "admin" \
-    --aks_resource_group "$resource_group" \
-    --aks_name "$aks_name" \
+    --resource_group "$resource_group" \
+    --location "$location" \
+    --name_prefix "$name_prefix" \
+    --service_name "$service_name" \
     --sp_subscription_id "$subscription_id" \
     --sp_client_id "$app_id" \
     --sp_client_password "$app_key" \
     --sp_tenant_id "$tenant_id" \
     --artifacts_location "$artifacts_location" \
     --sas_token "$artifacts_location_sas_token"
-
-rm -f "$temp_key_path"
-rm -f "$temp_pub_key"

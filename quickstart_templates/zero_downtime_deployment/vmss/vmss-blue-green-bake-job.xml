@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.16">
+  <actions/>
+  <displayName>Bake Image</displayName>
+  <description>Bake a managed OS image with the given tomcat installed, and optionally trigger the downstream job to deploy the image to the VMSS.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>TOMCAT_VERSION</name>
+          <description>The version of the Tomcat service that will be bundled in the result OS image.</description>
+          <defaultValue>8</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RESOURCE_GROUP</name>
+          <description>The resource group to store the managed OS image.</description>
+          <defaultValue>{insert-resource-group}</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>IMAGE_NAME</name>
+          <description>The name of the result managed OS image. If not provided, a random one will be generated with the pattern &quot;tomcat-{TOMCAT_VERSION}-XXXX&quot;.</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>TRIGGER_DEPLOY</name>
+          <description>Whether to trigger the deployment of the image to the VMSS or not.</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.42">
+    <script><![CDATA[
+node {
+    def resourceGroup = env.RESOURCE_GROUP?.trim()
+    def location = '{insert-location}'
+    def imageName = env.IMAGE_NAME?.trim() ?: "tomcat-${env.TOMCAT_VERSION}-${java.util.UUID.randomUUID().toString().substring(0, 8)}"
+
+    def artifactsLocation = '{insert-artifacts-location}'
+    def sasToken = '{insert-sas-token}'
+    def deployJobName = 'deploy-to-vmss'
+
+    stage('Pre-check') {
+        if (!resourceGroup) {
+            error('Resource group is not specified')
+        }
+
+        if (env.TOMCAT_VERSION != '7' && env.TOMCAT_VERSION != '8') {
+            error("Tomcat version '${env.TOMCAT_VERSION}' is invalid, allowed values: 7, 8")
+        }
+    }
+
+    stage('Fetch Build Script') {
+        sh """
+wget "${artifactsLocation}/quickstart_templates/zero_downtime_deployment/vmss/packer-build-tomcat-image.sh${sasToken}" -O packer-build-tomcat-image.sh
+"""
+    }
+
+    stage('Build Image') {
+        withCredentials([azureServicePrincipal('sp')]) {
+            sh """
+bash packer-build-tomcat-image.sh --app_id "\$AZURE_CLIENT_ID" \\
+    --app_key "\$AZURE_CLIENT_SECRET" \\
+    --subscription_id "\$AZURE_SUBSCRIPTION_ID" \\
+    --tenant_id "\$AZURE_TENANT_ID" \\
+    --tomcat_version "${env.TOMCAT_VERSION}" \\
+    --image_name "${imageName}" \\
+    --resource_group "${resourceGroup}" \\
+    --location "${location}" \\
+    --artifacts_location "${artifactsLocation}" \\
+    --sas_token "${sasToken}"
+"""
+        }
+    }
+
+    stage('Verify Image') {
+        withCredentials([azureServicePrincipal('sp')]) {
+            sh """
+az login --service-principal -u "\$AZURE_CLIENT_ID" -p "\$AZURE_CLIENT_SECRET" -t "\$AZURE_TENANT_ID"
+az account set --subscription "\$AZURE_SUBSCRIPTION_ID"
+IMAGE_ID="\$(az image show --resource-group "${resourceGroup}" --name "${imageName}" --query id --output tsv)"
+az logout
+if [ -z "\$IMAGE_ID" ]; then
+    echo "The result image ${imageName} was not found in resource group ${resourceGroup}"
+    exit 1
+else
+    echo "Image ID: \$IMAGE_ID"
+    echo "\$IMAGE_ID" >image-id
+fi
+"""
+        }
+    }
+
+    stage('Trigger Deployment') {
+        if (env.TRIGGER_DEPLOY == 'true') {
+            def imageId = readFile('image-id').trim()
+            if (!imageId) {
+                error("Failed to get the image ID from file 'image-id'")
+            }
+            build job: deployJobName, parameters: [string(name: 'IMAGE_ID', value: imageId)], wait: false
+        }
+    }
+}
+]]></script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
