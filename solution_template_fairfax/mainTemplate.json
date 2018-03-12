@@ -389,7 +389,7 @@
       "properties": {
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
-          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -al \"', parameters('artifactsLocation'), '\" -st \"', parameters('artifactsLocationSasToken'), '\"' )]"
+          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -ae \"', 'Azure US Government', '\" -al \"', parameters('artifactsLocation'), '\" -st \"', parameters('artifactsLocationSasToken'), '\"' )]"
         },
         "publisher": "Microsoft.Azure.Extensions",
         "settings": {
