@@ -14,6 +14,7 @@ Arguments
   --service_principal_secret|-ss      : The service principal secret.
   --subscription_id|-subid            : The subscription ID of the SP.
   --tenant_id|-tid                    : The tenant id of the SP.
+  --azure_env|-ae                     : The Azure environment. Default is 'Azure'.
   --artifacts_location|-al            : Url used to reference other scripts/artifacts.
   --sas_token|-st                     : A sas token needed if the artifacts location is private.
   --cloud_agents|-ca                  : The type of the cloud agents: aci, vm or no.
@@ -63,6 +64,7 @@ jenkins_version_location="https://raw.githubusercontent.com/Azure/jenkins/master
 jenkins_fallback_version="2.73.3"
 azure_web_page_location="/usr/share/nginx/azure"
 jenkins_release_type="LTS"
+azure_env="Azure"
 
 while [[ $# > 0 ]]
 do
@@ -100,6 +102,9 @@ do
     --tenant_id|-tid)
       tenant_id="$1"
       shift
+      ;;
+    --azure_env|-ae)
+      azure_env="$1"
       ;;
     --artifacts_location|-al)
       artifacts_location="$1"
@@ -321,12 +326,8 @@ sp_cred=$(cat <<EOF
     <subscriptionId>${subscription_id}</subscriptionId>
     <clientId>${service_principal_id}</clientId>
     <clientSecret>${service_principal_secret}</clientSecret>
-    <oauth2TokenEndpoint>https://login.windows.net/${tenant_id}</oauth2TokenEndpoint>
-    <serviceManagementURL>https://management.core.windows.net/</serviceManagementURL>
     <tenant>${tenant_id}</tenant>
-    <authenticationEndpoint>https://login.microsoftonline.com/</authenticationEndpoint>
-    <resourceManagerEndpoint>https://management.azure.com/</resourceManagerEndpoint>
-    <graphEndpoint>https://graph.windows.net/</graphEndpoint>
+    <azureEnvironmentName>${azure_env}</azureEnvironmentName>
   </data>
 </com.microsoft.azure.util.AzureCredentials>
 EOF
