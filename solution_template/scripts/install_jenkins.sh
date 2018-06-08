@@ -105,6 +105,7 @@ do
       ;;
     --azure_env|-ae)
       azure_env="$1"
+      shift
       ;;
     --artifacts_location|-al)
       artifacts_location="$1"
