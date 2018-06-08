@@ -345,6 +345,28 @@ elif [ "${service_principal_type}" == 'off' ]; then
   cloud_agents="no"
 fi
 
+#generate ssh key
+ssh-keygen -t rsa -b 4096 -N '' -f /tmp/jenkins_ssh_key
+ssh_public_key=$(cat /tmp/jenkins_ssh_key.pub)
+ssh_private_key=$(cat /tmp/jenkins_ssh_key)
+rm /tmp/jenkins_ssh_key{,.pub}
+
+ssh_key_cred=$(cat <<EOF
+<com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey>
+          <scope>GLOBAL</scope>
+          <id>slave_ssh_key</id>
+          <description></description>
+          <username>jenkins</username>
+          <privateKeySource class="com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey\$DirectEntryPrivateKeySource">
+            <privateKey>${ssh_private_key}</privateKey>
+          </privateKeySource>
+</com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey>
+EOF
+)
+echo "${ssh_key_cred}" > ssh_key_cred.xml
+run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif ssh_key_cred.xml
+rm ssh_key_cred.xml
+
 #add cloud agents
 vm_agent_conf=conf=$(cat <<EOF
 <clouds>
@@ -406,14 +428,29 @@ aci_agent_conf=$(cat <<EOF
       <com.microsoft.jenkins.containeragents.aci.AciContainerTemplate>
         <name>aciagents</name>
         <label>linux</label>
-        <image>jenkinsci/jnlp-slave</image>
+        <image>jenkinsci/ssh-slave</image>
         <osType>Linux</osType>
-        <command>jenkins-slave -url \${rootUrl} \${secret} \${nodeName}</command>
+        <command>setup-sshd</command>
         <rootFs>/home/jenkins</rootFs>
         <timeout>10</timeout>
+        <ports/>
         <cpu>1</cpu>
         <memory>1.5</memory>
-        <retentionStrategy class="com.microsoft.jenkins.containeragents.strategy.ContainerOnceRetentionStrategy" />
+        <retentionStrategy class="com.microsoft.jenkins.containeragents.strategy.ContainerOnceRetentionStrategy">
+          <idleMinutes>10</idleMinutes>
+        </retentionStrategy>
+        <envVars>
+          <com.microsoft.jenkins.containeragents.PodEnvVar>
+            <key>JENKINS_SLAVE_SSH_PUBKEY</key>
+            <value>${ssh_public_key}</value>
+          </com.microsoft.jenkins.containeragents.PodEnvVar>
+        </envVars>
+        <privateRegistryCredentials/>
+        <volumes/>
+        <launchMethodType>ssh</launchMethodType>
+        <sshCredentialsId>slave_ssh_key</sshCredentialsId>
+        <sshPort>22</sshPort>
+        <isAvailable>true</isAvailable>
       </com.microsoft.jenkins.containeragents.aci.AciContainerTemplate>
     </templates>
   </com.microsoft.jenkins.containeragents.aci.AciCloud>
