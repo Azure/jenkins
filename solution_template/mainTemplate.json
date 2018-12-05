@@ -190,6 +190,19 @@
   },
   "resources": [
     {
+      "apiVersion": "2018-02-01",
+      "name": "pid-f41ad7f4-2f38-5b1b-bfe7-d8bdaa880a68",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
+        }
+      }
+    },
+    {
       "apiVersion": "2016-09-01",
       "dependsOn": [],
       "name": "[variables('publicIPDeploymentName')]",
