@@ -63,6 +63,13 @@
       "type": "string",
       "defaultValue": "LTS"
     },
+    "jdkType": {
+      "metadata": {
+        "description": "JDK type (Zulu or openjdk)"
+      },
+      "type": "string",
+      "defaultValue": "Zulu"
+    },
     "location": {
       "metadata": {
         "description": "Azure location where to deploy the resources"
