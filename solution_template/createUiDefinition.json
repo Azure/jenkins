@@ -189,7 +189,7 @@
             "type": "Microsoft.Common.DropDown",
             "label": "JDK Type",
             "defaultValue": "Zulu",
-            "toolTip": "Azul Systems Zulu Enterprise builds of OpenJDK is recommended for Azure. If you change your mind, you can always SSH into your VM and install a different SDK.",
+            "toolTip": "Azul Systems Zulu Enterprise builds of OpenJDK is recommended for Azure. If you change your mind, you can always SSH into your VM and install a different JDK.",
             "constraints": {
               "allowedValues": [
                 {
