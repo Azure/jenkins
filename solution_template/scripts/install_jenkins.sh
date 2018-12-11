@@ -65,7 +65,7 @@ jenkins_version_location="https://raw.githubusercontent.com/Azure/jenkins/master
 jenkins_fallback_version="2.73.3"
 azure_web_page_location="/usr/share/nginx/azure"
 jenkins_release_type="LTS"
-jdk_type="Zulu"
+jdk_type="zulu"
 azure_env="Azure"
 
 while [[ $# > 0 ]]
@@ -150,8 +150,8 @@ if [[ "$jenkins_release_type" != "LTS" ]] && [[ "$jenkins_release_type" != "week
   exit 1
 fi
 throw_if_empty --jdk_type $jdk_type
-if [[ "$jdk_type" != "Zulu" ]] && [[ "$jdk_type" != "Openjdk" ]]; then
-  echo "Parameter jdk_type can only be 'Zulu' or 'Openjdk'! Current value is '$jdk_type'"
+if [[ "$jdk_type" != "zulu" ]] && [[ "$jdk_type" != "openjdk" ]]; then
+  echo "Parameter jdk_type can only be 'zulu' or 'openjdk'! Current value is '$jdk_type'"
   exit 1
 fi
 
@@ -257,7 +257,7 @@ else
   sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 fi
 
-if [ "$jdk_type" == "Zulu" ]; then
+if [ "$jdk_type" == "zulu" ]; then
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
   sudo add-apt-repository "deb http://repos.azul.com/azure-only/zulu/apt stable main" --yes
 else
@@ -270,7 +270,7 @@ sudo apt-get install apt-transport-https
 sudo apt-get update --yes
 
 #install jdk8
-if [ "$jdk_type" == "Zulu" ]; then
+if [ "$jdk_type" == "zulu" ]; then
   sudo apt-get install zulu-8-azure-jdk --yes
 else
   sudo apt-get install openjdk-8-jdk --yes
