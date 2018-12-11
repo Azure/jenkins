@@ -65,10 +65,10 @@
     },
     "jdkType": {
       "metadata": {
-        "description": "JDK type (Zulu or openjdk)"
+        "description": "JDK type (zulu or openjdk)"
       },
       "type": "string",
-      "defaultValue": "Zulu"
+      "defaultValue": "zulu"
     },
     "location": {
       "metadata": {
