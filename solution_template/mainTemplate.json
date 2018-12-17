@@ -7,7 +7,7 @@
         "artifactsBaseUrl": "",
         "description": "Artifacts location"
       },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/jenkins/master/solution_template/",
+      "defaultValue": "[uri(deployment().properties.templateLink.uri, '.')]",
       "type": "string"
     },
     "artifactsLocationSasToken": {
