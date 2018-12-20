@@ -183,6 +183,26 @@
               ]
             },
             "visible": true
+          },
+          {
+            "name": "jdkType",
+            "type": "Microsoft.Common.DropDown",
+            "label": "JDK Type",
+            "defaultValue": "Zulu",
+            "toolTip": "JDK to be installed to the Jenkins instance. Default is Azul System Zulu Enterprise Builds of OpenJDK.",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "Zulu",
+                  "value": "zulu"
+                },
+                {
+                  "label": "OpenJDK",
+                  "value": "openjdk"
+                }
+              ]
+            },
+            "visible": true
           }
         ]
       },
@@ -294,6 +314,7 @@
       "vmSize": "[steps('firstStep').vmSize]",
       "location": "[location()]",
       "jenkinsReleaseType": "[steps('firstStep').jenkinsReleaseType]",
+      "jdkType": "[steps('firstStep').jdkType]",
       "spType": "[steps('secondStep').sptype]",
       "spId": "[steps('secondStep').spSection.spid]",
       "spSecret": "[steps('secondStep').spSection.spsecret]",

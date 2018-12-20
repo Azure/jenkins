@@ -8,6 +8,7 @@ Command
 Arguments
   --jenkins_fqdn|-jf       [Required] : Jenkins FQDN
   --jenkins_release_type|-jrt         : The Jenkins release type (LTS or weekly or verified). By default it's set to LTS
+  --jdk_type|-jt                      : The type of installed JDK.
   --jenkins_version_location|-jvl     : Url used to specify the version of Jenkins.
   --service_principal_type|-sp        : The type of service principal: MSI or manual.
   --service_principal_id|-sid         : The service principal ID.
@@ -64,6 +65,7 @@ jenkins_version_location="https://raw.githubusercontent.com/Azure/jenkins/master
 jenkins_fallback_version="2.73.3"
 azure_web_page_location="/usr/share/nginx/azure"
 jenkins_release_type="LTS"
+jdk_type="zulu"
 azure_env="Azure"
 
 while [[ $# > 0 ]]
@@ -77,6 +79,10 @@ do
       ;;
     --jenkins_release_type|-jrt)
       jenkins_release_type="$1"
+      shift
+      ;;
+    --jdk_type|-jt)
+      jdk_type="$1"
       shift
       ;;
     --jenkins_version_location|-jvl)
@@ -141,6 +147,11 @@ throw_if_empty --jenkins_fqdn $jenkins_fqdn
 throw_if_empty --jenkins_release_type $jenkins_release_type
 if [[ "$jenkins_release_type" != "LTS" ]] && [[ "$jenkins_release_type" != "weekly" ]] && [[ "$jenkins_release_type" != "verified" ]]; then
   echo "Parameter jenkins_release_type can only be 'LTS' or 'weekly' or 'verified'! Current value is '$jenkins_release_type'"
+  exit 1
+fi
+throw_if_empty --jdk_type $jdk_type
+if [[ "$jdk_type" != "zulu" ]] && [[ "$jdk_type" != "openjdk" ]]; then
+  echo "Parameter jdk_type can only be 'zulu' or 'openjdk'! Current value is '$jdk_type'"
   exit 1
 fi
 
@@ -246,15 +257,24 @@ else
   sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
 fi
 
-sudo add-apt-repository ppa:openjdk-r/ppa --yes
+if [ "$jdk_type" == "zulu" ]; then
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
+  sudo add-apt-repository "deb http://repos.azul.com/azure-only/zulu/apt stable main" --yes
+else
+  sudo add-apt-repository ppa:openjdk-r/ppa --yes
+fi
 
 echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
 wget -q -O - https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
 sudo apt-get install apt-transport-https
 sudo apt-get update --yes
 
-#install openjdk8
-sudo apt-get install openjdk-8-jre openjdk-8-jre-headless openjdk-8-jdk --yes
+#install jdk8
+if [ "$jdk_type" == "zulu" ]; then
+  sudo apt-get install zulu-8-azure-jdk --yes
+else
+  sudo apt-get install openjdk-8-jdk --yes
+fi
 
 #install jenkins
 if [[ ${jenkins_release_type} == 'verified' ]]; then
