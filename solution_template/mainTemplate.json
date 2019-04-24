@@ -120,9 +120,9 @@
       "type": "string"
     },
     "spType":{
-      "defaultValue": "msi",
+      "defaultValue": "managed-identities-for-azure-resources",
       "metadata": {
-        "description": "The type of service principal injected into Jenkins (can be 'msi' or 'manual')."
+        "description": "The type of service principal injected into Jenkins (can be 'managed-identities-for-azure-resources' or 'manual')."
       },
       "type": "string"
     },
@@ -406,27 +406,11 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', variables('vmDeploymentName'))]"
       ],
-      "condition": "[equals(parameters('spType'), 'msi')]",
+      "condition": "[equals(parameters('spType'), 'managed-identities-for-azure-resources')]",
       "properties": {
         "roleDefinitionId": "[concat(subscription().id, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "principalId": "[reference(variables('vmDeploymentName')).outputs.identity.value.principalId]",
         "scope": "[resourceGroup().id]"
-      }
-    },
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'), '/ManagedIdentityExtensionForLinux')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', variables('vmDeploymentName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.ManagedIdentity",
-        "type": "ManagedIdentityExtensionForLinux",
-        "typeHandlerVersion": "1.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": { }
       }
     },
     {
