@@ -10,7 +10,7 @@ Arguments
   --jenkins_release_type|-jrt         : The Jenkins release type (LTS or weekly or verified). By default it's set to LTS
   --jdk_type|-jt                      : The type of installed JDK.
   --jenkins_version_location|-jvl     : Url used to specify the version of Jenkins.
-  --service_principal_type|-sp        : The type of service principal: MSI or manual.
+  --service_principal_type|-sp        : The type of service principal: managed-identities-for-azure-resources or manual.
   --service_principal_id|-sid         : The service principal ID.
   --service_principal_secret|-ss      : The service principal secret.
   --subscription_id|-subid            : The subscription ID of the SP.
@@ -329,13 +329,12 @@ echo "${final_jenkins_config}" | sudo tee /var/lib/jenkins/config.xml > /dev/nul
 sudo service jenkins restart
 
 #install the service principal
-msi_cred=$(cat <<EOF
-<com.microsoft.azure.util.AzureMsiCredentials>
+imds_cred=$(cat <<EOF
+<com.microsoft.azure.util.AzureImdsCredentials>
   <scope>GLOBAL</scope>
   <id>azure_service_principal</id>
-  <description>Local MSI</description>
-  <msiPort>50342</msiPort>
-</com.microsoft.azure.util.AzureMsiCredentials>
+  <description>Local Managed Identities for Azure Resources</description>
+</com.microsoft.azure.util.AzureImdsCredentials)
 EOF
 )
 sp_cred=$(cat <<EOF
@@ -353,10 +352,10 @@ sp_cred=$(cat <<EOF
 </com.microsoft.azure.util.AzureCredentials>
 EOF
 )
-if [ "${service_principal_type}" == 'msi' ]; then
-  echo "${msi_cred}" > msi_cred.xml
-  run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif msi_cred.xml
-  rm msi_cred.xml
+if [ "${service_principal_type}" == 'managed-identities-for-azure-resources' ]; then
+  echo "${imds_cred}" > imds_cred.xml
+  run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif imds_cred.xml
+  rm imds_cred.xml
 elif [ "${service_principal_type}" == 'manual' ]; then
   echo "${sp_cred}" > sp_cred.xml
   run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif sp_cred.xml

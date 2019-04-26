@@ -120,9 +120,9 @@
       "type": "string"
     },
     "spType":{
-      "defaultValue": "msi",
+      "defaultValue": "managed-identities-for-azure-resources",
       "metadata": {
-        "description": "The type of service principal injected into Jenkins (can be 'msi' or 'manual')."
+        "description": "The type of service principal injected into Jenkins (can be 'managed-identities-for-azure-resources' or 'manual')."
       },
       "type": "string"
     },
