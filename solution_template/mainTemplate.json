@@ -181,6 +181,48 @@
       },
       "type": "string",
       "defaultValue": "172.16.0.0/24"
+    },
+    "enableArtifactManager": {
+      "metadata": {
+        "description": "Whether config Azure native artifact manager"
+      },
+      "type": "string",
+      "defaultValue": "yes"
+    },
+    "storageAccountName": {
+      "metadata": {
+        "description": "Storage account name for artifact manager"
+      },
+      "type": "string",
+      "defaultValue": ""
+    },
+    "storageAccountKey": {
+      "metadata": {
+        "description": "Storage account key for artifact manager"
+      },
+      "type": "string",
+      "defaultValue": ""
+    },
+    "storageEndpoint": {
+      "metadata": {
+        "description": "Storage endpoint for different Azure environment"
+      },
+      "type": "string",
+      "defaultValue": "https://blob.core.windows.net/"
+    },
+    "artifactContainer": {
+      "metadata": {
+        "description": "Container name used for artifact manager"
+      },
+      "type": "string",
+      "defaultValue": ""
+    },
+    "artifactPrefix": {
+      "metadata": {
+        "description": "Prefix in containr for artifact manager"
+      },
+      "type": "string",
+      "defaultValue": "azure/"
     }
   },
   "variables": {
@@ -423,7 +465,7 @@
       "properties": {
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
-          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -jt \"', parameters('jdkType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -al \"', parameters('artifactsLocation'), '\" -st \"', parameters('artifactsLocationSasToken'), '\"' )]"
+          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -jt \"', parameters('jdkType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -al \"', parameters('artifactsLocation'), '\" -st \"', parameters('artifactsLocationSasToken'), '\" -ame \"', parameters('enableArtifactManager'), '\" -sa \"', parameters('storageAccountName'), '\" -sk \"', parameters('storageAccountKey'), '\" -se \"', parameters('storageEndpoint'), '\" -ac \"', parameters('artifactContainer'), '\" -ap \"', parameters('artifactPrefix'), '\"' )]"
         },
         "publisher": "Microsoft.Azure.Extensions",
         "settings": {
