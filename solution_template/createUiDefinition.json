@@ -301,7 +301,7 @@
             "name": "enableArtifactManager",
             "type": "Microsoft.Common.DropDown",
             "label": "Enable Azure Native Artiface Manager",
-            "defaultValue": "Yes",
+            "defaultValue": "No",
             "toolTip": "Natively store Jenkins artifacts in Azure storage.",
             "constraints": {
               "allowedValues": [
@@ -318,18 +318,25 @@
             "visible": true
           },
           {
-            "name": "storageAccount",
+            "name": "artifactConfig",
             "type": "Microsoft.Common.Section",
             "label": "Azure Artifact Manager",
             "elements": [
               {
-                "name": "storageAccountName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Storage Account Name",
-                "defaultValue": "",
-                "toolTip": "The Azure storage account name used to store Jenkins artifacts.",
+                "name": "storageAccount",
+                "type": "Microsoft.Storage.StorageAccountSelector",
+                "label": "Storage Account",
+                "toolTip": "The Azure storage account used to store Jenkins artifacts.",
+                "defaultValue": {
+                  "name": "storageaccountsample",
+                  "type": "Premium_LRS"
+                },
                 "constraints": {
-                  "required": true
+                  "allowedTypes": [],
+                  "excludedTypes": []
+                },
+                "options": {
+                  "hideExisting": false
                 },
                 "visible": true
               },
@@ -340,7 +347,7 @@
                   "password":"Storage Key",
                   "confirmPassword": "The secret key for the storage account."
                 },
-                "toolTip": "",
+                "toolTip": "The access key for the storage account.",
                 "constraints": {
                   "required": true
                 },
@@ -364,8 +371,8 @@
                 "name": "artifactContainer",
                 "type": "Microsoft.Common.TextBox",
                 "label": "Container Name",
-                "defaultValue": "The blob container name used for your artifacts storage.",
-                "toolTip": "",
+                "defaultValue": "artifacts",
+                "toolTip": "The blob container name used for your artifacts storage.",
                 "constraints": {
                   "required": true
                 },
@@ -413,12 +420,12 @@
       "vnetNewOrExisting": "[steps('firstStep').vnet.newOrExisting]",
       "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]",
-      "enableArtifactManager":"[steps('secondSetp').enableArtifactManager]",
-      "storageAccountName":"[steps('secondSetp').storageAccountName]",
-      "storageAccountKey":"[steps('secondSetp').storageAccountKey]",
-      "storageEndpoint":"[steps('secondSetp').storageEndpoint]",
-      "artifactContainer":"[steps('secondSetp').artifactContainer]",
-      "artifactPrefix":"[steps('secondSetp').artifactPrefix]"
+      "enableArtifactManager":"[steps('secondStep').enableArtifactManager]",
+      "storageAccountName":"[steps('secondStep').storageAccount]",
+      "storageAccountKey":"[steps('secondStep').storageAccountKey]",
+      "storageEndpoint":"[steps('secondStep').storageEndpoint]",
+      "artifactContainer":"[steps('secondStep').artifactContainer]",
+      "artifactPrefix":"[steps('secondStep').artifactPrefix]"
     }
   }
 }

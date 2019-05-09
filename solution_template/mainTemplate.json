@@ -187,7 +187,7 @@
         "description": "Whether config Azure native artifact manager"
       },
       "type": "string",
-      "defaultValue": "yes"
+      "defaultValue": "no"
     },
     "storageAccountName": {
       "metadata": {
