@@ -426,7 +426,7 @@ azure_artifact=$(cat <<EOF
 EOF
 )
 
-if [ "${artifact_manger_enabled}" == 'yes']; then
+if [ "${artifact_manager_enabled}" == 'yes']; then
   echo "${storage_cred}" > storage_cred.xml
   run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif storage_cred.xml
   rm storage_cred.xml
