@@ -21,6 +21,12 @@ Arguments
   --cloud_agents|-ca                  : The type of the cloud agents: aci, vm or no.
   --resource_group|-rg                : the resource group name.
   --location|-lo                      : the resource group location.
+  --artifact_manager_enabled|-ame     : Whether default enable Azure artifact manager.
+  --storage_account|-sa               : The storage account name for artifact manager.
+  --storage_key|-sk                   : The storage key for artifact manager.
+  --storage_endpoint|-se              : The storage blob endpoint for artifact manager.
+  --artifact_container|-ac            : The container name for artifact manger.
+  --artifact_prefix|-ap               : The prefix value for artifact manager.
 EOF
 }
 
@@ -131,6 +137,30 @@ do
       ;;
     --location|-lo)
       location="$1"
+      shift
+      ;;
+    --artifact_manager_enabled|-ame)
+      artifact_manager_enabled="$1"
+      shift
+      ;;
+    --storage_account|-sa)
+      storage_account="$1"
+      shift
+      ;;
+    --storage_key|-sk)
+      storage_key="$1"
+      shift
+      ;;
+    --storage_endpoint|-se)
+      storage_endpoint="$1"
+      shift
+      ;;
+    --artifact_container|-ac)
+      artifact_container="$1"
+      shift
+      ;;
+    --artifact_prefix|-ap)
+      artifact_prefix="$1"
       shift
       ;;
     --help|-help|-h)
@@ -301,7 +331,7 @@ retry_until_successful sudo test -f /var/lib/jenkins/secrets/initialAdminPasswor
 retry_until_successful run_util_script "scripts/run-cli-command.sh" -c "version"
 
 #We need to install workflow-aggregator so all the options in the auth matrix are valid
-plugins=(azure-vm-agents windows-azure-storage matrix-auth workflow-aggregator azure-app-service tfs azure-acs azure-container-agents azure-function azure-ad azure-vmss service-fabric kubernetes-cd azure-container-registry-tasks)
+plugins=(azure-vm-agents windows-azure-storage matrix-auth workflow-aggregator azure-app-service tfs azure-acs azure-container-agents azure-function azure-ad azure-vmss service-fabric kubernetes-cd azure-container-registry-tasks azure-artifact-manager)
 for plugin in "${plugins[@]}"; do
   run_util_script "scripts/run-cli-command.sh" -c "install-plugin $plugin -deploy"
 done
@@ -362,6 +392,46 @@ elif [ "${service_principal_type}" == 'manual' ]; then
   rm sp_cred.xml
 elif [ "${service_principal_type}" == 'off' ]; then
   cloud_agents="no"
+fi
+
+#generate storage credential
+storage_cred=$(cat <<EOF
+<com.microsoftopentechnologies.windowsazurestorage.helper.AzureCredentials plugin="windows-azure-storage">
+  <scope>GLOBAL</scope>
+  <id>artifact_storage</id>
+  <description>The storage credential for artifact manager</description>
+  <storageData>
+    <storageAccountName>${storage_account}</storageAccountName>
+    <storageAccountKey>${storage_key}</storageAccountKey>
+    <blobEndpointURL>${storage_endpoint}</blobEndpointURL>
+  </storageData>
+</com.microsoftopentechnologies.windowsazurestorage.helper.AzureCredentials>
+EOF
+)
+
+#generate artifact manager configuration
+azure_artifact=$(cat <<EOF
+<?xml version='1.1' encoding='UTF-8'?>
+<jenkins.model.ArtifactManagerConfiguration>
+  <artifactManagerFactories>
+    <com.microsoft.jenkins.artifactmanager.AzureArtifactManagerFactory plugin="azure-artifact-manager">
+      <config>
+        <storageCredentialId>artifact_storage</storageCredentialId>
+        <container>${artifact_container}</container>
+        <prefix>${artifact_prefix}</prefix>
+      </config>
+    </com.microsoft.jenkins.artifactmanager.AzureArtifactManagerFactory>
+  </artifactManagerFactories>
+</jenkins.model.ArtifactManagerConfiguration>
+EOF
+)
+
+if [ "${artifact_manger_enabled}" == 'yes']; then
+  echo "${storage_cred}" > storage_cred.xml
+  run_util_script "scripts/run-cli-command.sh" -c "create-credentials-by-xml system::system::jenkins _" -cif storage_cred.xml
+  rm storage_cred.xml
+
+  echo "${azure_artifact}" | sudo tee /var/lib/jenkins/jenkins.model.ArtifactManagerConfiguration.xml > /dev/null
 fi
 
 #generate ssh key

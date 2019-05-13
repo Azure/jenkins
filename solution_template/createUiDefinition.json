@@ -296,6 +296,101 @@
               ]
             },
             "visible": "[not(equals(steps('secondStep').sptype,'off'))]"
+          },
+          {
+            "name": "enableArtifactManager",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Enable Azure Native Artiface Manager",
+            "defaultValue": "No",
+            "toolTip": "Natively store Jenkins artifacts in Azure storage.",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "Yes",
+                  "value": "yes"
+                },
+                {
+                  "label": "No",
+                  "value": "no"
+                }
+              ]
+            },
+            "visible": true
+          },
+          {
+            "name": "artifactConfig",
+            "type": "Microsoft.Common.Section",
+            "label": "Azure Artifact Manager",
+            "elements": [
+              {
+                "name": "storageAccount",
+                "type": "Microsoft.Storage.StorageAccountSelector",
+                "label": "Storage Account",
+                "toolTip": "The Azure storage account used to store Jenkins artifacts.",
+                "defaultValue": {
+                  "name": "storageaccountsample",
+                  "type": "Premium_LRS"
+                },
+                "constraints": {
+                  "allowedTypes": [],
+                  "excludedTypes": []
+                },
+                "options": {
+                  "hideExisting": false
+                },
+                "visible": true
+              },
+              {
+                "name": "storageAccountKey",
+                "type": "Microsoft.Common.PasswordBox",
+                "label": {
+                  "password":"Storage Key",
+                  "confirmPassword": "The secret key for the storage account."
+                },
+                "toolTip": "The access key for the storage account.",
+                "constraints": {
+                  "required": true
+                },
+                "options": {
+                  "hideConfirmation": true
+                },
+                "visible": true
+              },
+              {
+                "name": "storageEndpoint",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Blob Endpoint URL",
+                "defaultValue": "https://blob.core.windows.net/",
+                "toolTip": "If you are using a private or other Azure cloud service, enter the Blob service endpoint URL for that cloud.",
+                "constraints": {
+                  "required": true
+                },
+                "visible": true
+              },
+              {
+                "name": "artifactContainer",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Container Name",
+                "defaultValue": "artifacts",
+                "toolTip": "The blob container name used for your artifacts storage.",
+                "constraints": {
+                  "required": true
+                },
+                "visible": true
+              },
+              {
+                "name": "artifactPrefix",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Base Prefix",
+                "defaultValue": "azure/",
+                "toolTip": "String which will be used as prefix for every file path, if it ends with an '/', it will represent a folder.",
+                "constraints": {
+                  "required": true
+                },
+                "visible": true
+              }
+            ],
+            "visible": "[equals(steps('secondStep').enableArtifactManager,'yes')]"
           }
         ]
       }
@@ -324,7 +419,13 @@
       "vnetAddressPrefix": "[steps('firstStep').vnet.addressPrefix]",
       "vnetNewOrExisting": "[steps('firstStep').vnet.newOrExisting]",
       "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
-      "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]"
+      "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]",
+      "enableArtifactManager":"[steps('secondStep').enableArtifactManager]",
+      "storageAccountName":"[steps('secondStep').storageAccount]",
+      "storageAccountKey":"[steps('secondStep').storageAccountKey]",
+      "storageEndpoint":"[steps('secondStep').storageEndpoint]",
+      "artifactContainer":"[steps('secondStep').artifactContainer]",
+      "artifactPrefix":"[steps('secondStep').artifactPrefix]"
     }
   }
 }
