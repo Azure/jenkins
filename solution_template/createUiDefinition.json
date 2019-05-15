@@ -371,7 +371,7 @@
                 "name": "artifactContainer",
                 "type": "Microsoft.Common.TextBox",
                 "label": "Container Name",
-                "defaultValue": "artifacts",
+                "defaultValue": "jenkins",
                 "toolTip": "The blob container name used for your artifacts storage.",
                 "constraints": {
                   "required": true
@@ -382,7 +382,7 @@
                 "name": "artifactPrefix",
                 "type": "Microsoft.Common.TextBox",
                 "label": "Base Prefix",
-                "defaultValue": "azure/",
+                "defaultValue": "default/",
                 "toolTip": "String which will be used as prefix for every file path, if it ends with an '/', it will represent a folder.",
                 "constraints": {
                   "required": true
