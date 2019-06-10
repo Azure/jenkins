@@ -2,20 +2,19 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "artifactsLocation": {
+    "_artifactsLocation": {
       "metadata": {
-        "artifactsBaseUrl": "",
         "description": "Artifacts location"
       },
-      "defaultValue": "[uri(deployment().properties.templateLink.uri, '.')]",
+      "defaultValue": "[deployment().properties.templateLink.uri]",
       "type": "string"
     },
-    "artifactsLocationSasToken": {
+    "_artifactsLocationSasToken": {
       "metadata": {
         "description": "Artifacts Sas token"
       },
       "defaultValue": "",
-      "type": "string"
+      "type": "securestring"
     },
     "adminPassword": {
       "metadata": {

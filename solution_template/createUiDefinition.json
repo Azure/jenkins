@@ -363,7 +363,9 @@
                 "defaultValue": "https://blob.core.windows.net/",
                 "toolTip": "If you are using a private or other Azure cloud service, enter the Blob service endpoint URL for that cloud.",
                 "constraints": {
-                  "required": true
+                  "required": true,
+                  "regex": "^https:\/\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\/|\/([\\w#!:.?+=&%@!\\-\/]))?$",
+                  "validationMessage": "Must be a valid blob service endpoint URL for your environment."
                 },
                 "visible": true
               },
@@ -374,7 +376,9 @@
                 "defaultValue": "jenkins",
                 "toolTip": "The blob container name used for your artifacts storage.",
                 "constraints": {
-                  "required": true
+                  "required": true,
+                  "regex": "^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$",
+                  "validationMessage": "Must be a valid Azure Blob Storage's container name."
                 },
                 "visible": true
               },
@@ -385,7 +389,9 @@
                 "defaultValue": "default/",
                 "toolTip": "String which will be used as prefix for every file path, if it ends with an '/', it will represent a folder.",
                 "constraints": {
-                  "required": true
+                  "required": true,
+                  "regex": "^[a-z0-9A-Z]{1,30}\/?$",
+                  "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-30 characters long. A forward slash is optional at the end."
                 },
                 "visible": true
               }
