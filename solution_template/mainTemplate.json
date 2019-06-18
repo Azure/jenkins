@@ -2,20 +2,19 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "artifactsLocation": {
+    "_artifactsLocation": {
       "metadata": {
-        "artifactsBaseUrl": "",
         "description": "Artifacts location"
       },
-      "defaultValue": "[uri(deployment().properties.templateLink.uri, '.')]",
+      "defaultValue": "[deployment().properties.templateLink.uri]",
       "type": "string"
     },
-    "artifactsLocationSasToken": {
+    "_artifactsLocationSasToken": {
       "metadata": {
         "description": "Artifacts Sas token"
       },
       "defaultValue": "",
-      "type": "string"
+      "type": "securestring"
     },
     "adminPassword": {
       "metadata": {
@@ -208,7 +207,7 @@
         "description": "Storage endpoint for different Azure environment"
       },
       "type": "string",
-      "defaultValue": "https://blob.core.windows.net/"
+      "defaultValue": "[reference(variables('defaultStorageEndpoint')]"
     },
     "artifactContainer": {
       "metadata": {
@@ -235,7 +234,8 @@
     "templateUrlVM": "[concat(parameters('artifactsLocation'),'/VM-',parameters('authenticationType'),'.json',parameters('artifactsLocationSasToken'))]",
     "ubuntuSku": "16.04-LTS",
     "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
-    "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]"
+    "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]",
+    "defaultStorageEndpoint": "https://blob.core.windows.net/"
   },
   "resources": [
     {
