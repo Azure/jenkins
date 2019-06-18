@@ -207,7 +207,7 @@
         "description": "Storage endpoint for different Azure environment"
       },
       "type": "string",
-      "defaultValue": "https://blob.core.windows.net/"
+      "defaultValue": "[reference(variables('defaultStorageEndpoint')]"
     },
     "artifactContainer": {
       "metadata": {
@@ -234,7 +234,8 @@
     "templateUrlVM": "[concat(parameters('artifactsLocation'),'/VM-',parameters('authenticationType'),'.json',parameters('artifactsLocationSasToken'))]",
     "ubuntuSku": "16.04-LTS",
     "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
-    "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]"
+    "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]",
+    "defaultStorageEndpoint": "https://blob.core.windows.net/"
   },
   "resources": [
     {
