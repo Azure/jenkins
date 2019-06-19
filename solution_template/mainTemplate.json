@@ -207,7 +207,7 @@
         "description": "Storage endpoint for different Azure environment"
       },
       "type": "string",
-      "defaultValue": "[reference(variables('defaultStorageEndpoint')]"
+      "defaultValue": "[reference(variables('defaultStorageEndpoint'))]"
     },
     "artifactContainer": {
       "metadata": {
