@@ -229,9 +229,9 @@
     "frontEndNSGName": "[concat(parameters('vmName'), '-nsg')]",
     "nicName": "[concat(parameters('vmName'), '-nic')]",
     "publicIPDeploymentName": "[concat(parameters('vmName'), '-pip-deploy')]",
-    "templateUrlIP": "[concat(parameters('_artifactsLocation'),'/publicIP-',parameters('publicIPNewOrExisting'),'.json',parameters('_artifactsLocationSasToken'))]",
-    "templateUrlVnet": "[concat(parameters('_artifactsLocation'),'/vnet-',parameters('vnetNewOrExisting'),'.json',parameters('_artifactsLocationSasToken'))]",
-    "templateUrlVM": "[concat(parameters('_artifactsLocation'),'/VM-',parameters('authenticationType'),'.json',parameters('_artifactsLocationSasToken'))]",
+    "templateUrlIP": "[uri(parameters('_artifactsLocation'),concat('publicIP-',parameters('publicIPNewOrExisting'),'.json',parameters('_artifactsLocationSasToken')))]",
+    "templateUrlVnet": "[uri(parameters('_artifactsLocation'),concat('vnet-',parameters('vnetNewOrExisting'),'.json',parameters('_artifactsLocationSasToken')))]",
+    "templateUrlVM": "[uri(parameters('_artifactsLocation'),concat('VM-',parameters('authenticationType'),'.json',parameters('_artifactsLocationSasToken')))]",
     "ubuntuSku": "16.04-LTS",
     "vmDeploymentName": "[concat(parameters('vmName'), '-vm-deploy')]",
     "vnetDeployName": "[concat(parameters('vmName'), '-vnet-deploy')]"
@@ -464,12 +464,12 @@
       "properties": {
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
-          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -jt \"', parameters('jdkType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -al \"', parameters('_artifactsLocation'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\" -ame \"', parameters('enableArtifactManager'), '\" -sa \"', parameters('storageAccountName'), '\" -sk \"', parameters('storageAccountKey'), '\" -se \"', parameters('storageEndpoint'), '\" -ac \"', parameters('artifactContainer'), '\" -ap \"', parameters('artifactPrefix'), '\"' )]"
+          "commandToExecute": "[concat('./', variables('_extensionScript'), ' -ca \"', parameters('enableCloudAgents'), '\" -jf \"', reference(variables('publicIPDeploymentName')).outputs.fqdn.value, '\" -jrt \"', parameters('jenkinsReleaseType'), '\" -jt \"', parameters('jdkType'), '\" -lo \"', parameters('location'), '\" -rg \"', resourceGroup().name, '\" -sp \"', parameters('spType'), '\" -spid \"', parameters('spId'), '\" -ss \"', parameters('spSecret'), '\" -subid \"', subscription().subscriptionId, '\" -tid \"', subscription().tenantId, '\" -al \"', uri(parameters('_artifactsLocation'), '.'), '\" -st \"', parameters('_artifactsLocationSasToken'), '\" -ame \"', parameters('enableArtifactManager'), '\" -sa \"', parameters('storageAccountName'), '\" -sk \"', parameters('storageAccountKey'), '\" -se \"', parameters('storageEndpoint'), '\" -ac \"', parameters('artifactContainer'), '\" -ap \"', parameters('artifactPrefix'), '\"' )]"
         },
         "publisher": "Microsoft.Azure.Extensions",
         "settings": {
           "fileUris": [
-            "[concat(parameters('_artifactsLocation'), '/scripts/', variables('_extensionScript'), parameters('_artifactsLocationSasToken'))]"
+            "[uri(parameters('_artifactsLocation'), concat('scripts/', variables('_extensionScript'), parameters('_artifactsLocationSasToken')))]"
           ]
         },
         "type": "CustomScript",

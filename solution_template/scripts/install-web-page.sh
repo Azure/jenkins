@@ -63,10 +63,10 @@ sudo mkdir ${location}
 artifacts=("headshot.png" "title.png" "azure.svg" "copy.png" "site.css" "site.js" "index.html")
 for i in "${artifacts[@]}"; do
   if [[ $i =~ .*html.* ]]; then
-      raw_resource=$(curl --silent "${artifacts_location}/nginx/$i${artifacts_location_sas_token}")
+      raw_resource=$(curl --silent "${artifacts_location}nginx/$i${artifacts_location_sas_token}")
       final_resource=${raw_resource//'{domain-name}'/${url}}
       echo "${final_resource}" | sudo tee ${location}/$i > /dev/null
   else
-      curl --silent "${artifacts_location}/nginx/$i${artifacts_location_sas_token}" -o ${location}/$i
+      curl --silent "${artifacts_location}nginx/$i${artifacts_location_sas_token}" -o ${location}/$i
   fi
 done
