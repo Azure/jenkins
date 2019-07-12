@@ -427,11 +427,11 @@
       "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]",
       "enableArtifactManager":"[steps('secondStep').enableArtifactManager]",
-      "storageAccountName":"[steps('secondStep').storageAccount]",
-      "storageAccountKey":"[steps('secondStep').storageAccountKey]",
-      "storageEndpoint":"[steps('secondStep').storageEndpoint]",
-      "artifactContainer":"[steps('secondStep').artifactContainer]",
-      "artifactPrefix":"[steps('secondStep').artifactPrefix]"
+      "storageAccountName":"[steps('secondStep').artifactConfig.storageAccount]",
+      "storageAccountKey":"[steps('secondStep').artifactConfig.storageAccountKey]",
+      "storageEndpoint":"[steps('secondStep').artifactConfig.storageEndpoint]",
+      "artifactContainer":"[steps('secondStep').artifactConfig.artifactContainer]",
+      "artifactPrefix":"[steps('secondStep').artifactConfig.artifactPrefix]"
     }
   }
 }
