@@ -427,7 +427,7 @@
       "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]",
       "enableArtifactManager":"[steps('secondStep').enableArtifactManager]",
-      "storageAccountName":"[steps('secondStep').artifactConfig.storageAccount]",
+      "storageAccountName":"[steps('secondStep').artifactConfig.storageAccount.name]",
       "storageAccountKey":"[steps('secondStep').artifactConfig.storageAccountKey]",
       "storageEndpoint":"[steps('secondStep').artifactConfig.storageEndpoint]",
       "artifactContainer":"[steps('secondStep').artifactConfig.artifactContainer]",
