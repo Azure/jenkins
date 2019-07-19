@@ -422,7 +422,7 @@
       "enableCloudAgents": "[steps('secondStep').enableCloudAgents]",
       "vnetName": "[steps('firstStep').vnet.name]",
       "vnetResourceGroup": "[steps('firstStep').vnet.resourceGroup]",
-      "vnetAddressPrefix": "[first(steps('firstStep').vnet.addressPrefix)]",
+      "vnetAddressPrefix": "[first(steps('firstStep').vnet.addressPrefixes)]",
       "vnetNewOrExisting": "[steps('firstStep').vnet.newOrExisting]",
       "subnetName": "[steps('firstStep').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[steps('firstStep').vnet.subnets.subnet1.addressPrefix]",
