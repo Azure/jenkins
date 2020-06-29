@@ -396,7 +396,7 @@ fi
 
 #generate storage credential
 storage_cred=$(cat <<EOF
-<com.microsoftopentechnologies.windowsazurestorage.helper.AzureCredentials plugin="windows-azure-storage">
+<com.microsoftopentechnologies.windowsazurestorage.helper.AzureStorageAccount plugin="windows-azure-storage">
   <scope>GLOBAL</scope>
   <id>artifact_storage</id>
   <description>The storage credential for artifact manager</description>
@@ -405,7 +405,7 @@ storage_cred=$(cat <<EOF
     <storageAccountKey>${storage_key}</storageAccountKey>
     <blobEndpointURL>${storage_endpoint}</blobEndpointURL>
   </storageData>
-</com.microsoftopentechnologies.windowsazurestorage.helper.AzureCredentials>
+</com.microsoftopentechnologies.windowsazurestorage.helper.AzureStorageAccount>
 EOF
 )
 
